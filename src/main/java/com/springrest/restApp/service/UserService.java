@@ -38,4 +38,7 @@ public class UserService {
         userUpdated.setPassword(user.getPassword());
         return this.userRepository.save(userUpdated);
     }
+    public User handleGetUserByUsername (String username){
+        return this.userRepository.findByEmail(username);
+    }
 }
