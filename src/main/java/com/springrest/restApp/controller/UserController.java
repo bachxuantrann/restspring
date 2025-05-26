@@ -2,7 +2,7 @@ package com.springrest.restApp.controller;
 
 import com.springrest.restApp.domain.User;
 import com.springrest.restApp.service.UserService;
-import com.springrest.restApp.service.error.IdInvalidException;
+import com.springrest.restApp.util.error.IdInvalidException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;

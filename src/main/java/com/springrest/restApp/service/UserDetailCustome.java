@@ -20,7 +20,9 @@ public class UserDetailCustome  implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         com.springrest.restApp.domain.User user = this.userService.handleGetUserByUsername(username);
-
+        if (user==null){
+            throw new UsernameNotFoundException("User not found");
+        }
         return new User(
                 user.getEmail(),
                 user.getPassword(),
