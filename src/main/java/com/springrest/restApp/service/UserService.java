@@ -1,7 +1,11 @@
 package com.springrest.restApp.service;
 
 import com.springrest.restApp.domain.User;
+import com.springrest.restApp.domain.dto.MetaDTO;
+import com.springrest.restApp.domain.dto.ResultPaginationDTO;
 import com.springrest.restApp.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,8 +32,18 @@ public class UserService {
         return null;
 
     }
-    public List<User> handleGetAllUser(){
-        return this.userRepository.findAll();
+    public ResultPaginationDTO handleGetAllUser(Pageable pageable){
+        Page<User> users = this.userRepository.findAll(pageable);
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        MetaDTO mt = new MetaDTO();
+        mt.setPage(users.getNumber()+1);
+        mt.setPageSize(users.getSize());
+        mt.setTotalPages(users.getTotalPages());
+        mt.setTotal(users.getTotalElements());
+
+        rs.setMetaDTO(mt);
+        rs.setResult(users.getContent());
+        return rs;
     }
     public User handleUpdateUser(User user){
         User userUpdated = this.handleGetUser(user.getId());

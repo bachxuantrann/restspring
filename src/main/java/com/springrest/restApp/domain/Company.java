@@ -39,6 +39,10 @@ public class Company {
 //        this.createdBy = SecurityContextHolder.getContext().getAuthentication().getName();
         this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true ? SecurityUtil.getCurrentUserLogin().get() : "";
         this.createdAt = Instant.now();
-
+    }
+    @PreUpdate
+    public void handleBeforeUpdate(){
+        this.updatedAt = Instant.now();
+        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true ? SecurityUtil.getCurrentUserLogin().get() : "";
     }
 }

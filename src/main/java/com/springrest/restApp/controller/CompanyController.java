@@ -1,13 +1,17 @@
 package com.springrest.restApp.controller;
 
 import com.springrest.restApp.domain.Company;
+import com.springrest.restApp.domain.dto.ResultPaginationDTO;
 import com.springrest.restApp.service.CompanyService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class CompanyController {
@@ -15,8 +19,31 @@ public class CompanyController {
     public CompanyController(CompanyService companyService) {
         this.companyService = companyService;
     }
+//    Create a new company
     @PostMapping("/companies")
     public ResponseEntity<?> createCompany(@Valid @RequestBody Company company){
         return ResponseEntity.status(HttpStatus.CREATED).body(this.companyService.handleCreateCompany(company));
+    }
+//    Get list companies
+    @GetMapping("/companies")
+    public ResponseEntity<ResultPaginationDTO> getAllCompanies(
+            @RequestParam("current") Optional<String> currentOptional,
+            @RequestParam("pageSize") Optional<String> pageSizeOptional
+    ){
+        String current = currentOptional.isPresent() ? currentOptional.get() : "";
+        String pageSize = pageSizeOptional.isPresent() ? pageSizeOptional.get() : "";
+        Pageable pageable = PageRequest.of(Integer.parseInt(current)-1, Integer.parseInt(pageSize));
+        return ResponseEntity.status(HttpStatus.OK).body(this.companyService.handleGetAllCompany(pageable));
+    }
+//    Delete a company
+    @DeleteMapping("/companies/{id}")
+    public ResponseEntity<Void> deleteCompany(@PathVariable("id") Long id){
+        this.companyService.handleDeleteCompany(id);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+//    Update a company
+    @PutMapping("/companies")
+    public ResponseEntity<Company> updateCompany(@Valid @RequestBody Company company){
+        return ResponseEntity.status(HttpStatus.OK).body(this.companyService.handleUpdateCompany(company));
     }
 }
