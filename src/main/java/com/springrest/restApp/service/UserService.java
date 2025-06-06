@@ -6,6 +6,7 @@ import com.springrest.restApp.domain.dto.ResultPaginationDTO;
 import com.springrest.restApp.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,15 +33,14 @@ public class UserService {
         return null;
 
     }
-    public ResultPaginationDTO handleGetAllUser(Pageable pageable){
-        Page<User> users = this.userRepository.findAll(pageable);
+    public ResultPaginationDTO handleGetAllUser(Specification<User> spec, Pageable pageable){
+        Page<User> users = this.userRepository.findAll(spec, pageable);
         ResultPaginationDTO rs = new ResultPaginationDTO();
         MetaDTO mt = new MetaDTO();
         mt.setPage(users.getNumber()+1);
         mt.setPageSize(users.getSize());
         mt.setTotalPages(users.getTotalPages());
         mt.setTotal(users.getTotalElements());
-
         rs.setMetaDTO(mt);
         rs.setResult(users.getContent());
         return rs;

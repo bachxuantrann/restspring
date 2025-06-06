@@ -4,8 +4,10 @@ import com.springrest.restApp.domain.User;
 import com.springrest.restApp.domain.dto.ResultPaginationDTO;
 import com.springrest.restApp.service.UserService;
 import com.springrest.restApp.util.error.IdInvalidException;
+import com.turkraft.springfilter.boot.Filter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,14 +46,10 @@ public class UserController {
     }
     @GetMapping("/users")
     public ResponseEntity<ResultPaginationDTO> getAllUser(
-            @RequestParam("current") Optional<String> currentOptional,
-            @RequestParam("pageSize") Optional<String> pageSizeOptional
+            @Filter Specification<User> spec,
+            Pageable pageable
             ){
-
-        String current = currentOptional.isPresent() ? currentOptional.get() : "";
-        String pageSize = pageSizeOptional.isPresent() ? pageSizeOptional.get() : "";
-        Pageable pageable = PageRequest.of(Integer.parseInt(current)-1, Integer.parseInt(pageSize));
-        return ResponseEntity.status(HttpStatus.OK).body(this.userService.handleGetAllUser(pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(this.userService.handleGetAllUser(spec,pageable));
     }
     @PutMapping("/users")
     public ResponseEntity<User> updateUser(@RequestBody User user){
