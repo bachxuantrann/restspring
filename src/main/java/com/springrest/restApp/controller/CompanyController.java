@@ -3,9 +3,11 @@ package com.springrest.restApp.controller;
 import com.springrest.restApp.domain.Company;
 import com.springrest.restApp.domain.dto.ResultPaginationDTO;
 import com.springrest.restApp.service.CompanyService;
+import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,13 +29,10 @@ public class CompanyController {
 //    Get list companies
     @GetMapping("/companies")
     public ResponseEntity<ResultPaginationDTO> getAllCompanies(
-            @RequestParam("current") Optional<String> currentOptional,
-            @RequestParam("pageSize") Optional<String> pageSizeOptional
-    ){
-        String current = currentOptional.isPresent() ? currentOptional.get() : "";
-        String pageSize = pageSizeOptional.isPresent() ? pageSizeOptional.get() : "";
-        Pageable pageable = PageRequest.of(Integer.parseInt(current)-1, Integer.parseInt(pageSize));
-        return ResponseEntity.status(HttpStatus.OK).body(this.companyService.handleGetAllCompany(pageable));
+            @Filter Specification<Company> spec,
+            Pageable pageable
+            ){
+        return ResponseEntity.status(HttpStatus.OK).body(this.companyService.handleGetAllCompany(spec,pageable));
     }
 //    Delete a company
     @DeleteMapping("/companies/{id}")

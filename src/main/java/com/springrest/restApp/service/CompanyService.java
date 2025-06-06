@@ -6,6 +6,7 @@ import com.springrest.restApp.domain.dto.ResultPaginationDTO;
 import com.springrest.restApp.repository.CompanyRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,12 +21,12 @@ public class CompanyService {
     public Company handleCreateCompany(Company company){
         return this.companyRepository.save(company);
     }
-    public ResultPaginationDTO handleGetAllCompany(Pageable pageable){
-        Page<Company> companies = this.companyRepository.findAll(pageable);
+    public ResultPaginationDTO handleGetAllCompany(Specification spec, Pageable pageable){
+        Page<Company> companies = this.companyRepository.findAll(spec, pageable);
         ResultPaginationDTO rs = new ResultPaginationDTO();
         MetaDTO mt = new MetaDTO();
-        mt.setPage(companies.getNumber()+1);
-        mt.setPageSize(companies.getSize());
+        mt.setPage(pageable.getPageNumber()+1);
+        mt.setPageSize(pageable.getPageSize());
         mt.setTotalPages(companies.getTotalPages());
         mt.setTotal(companies.getTotalElements());
         rs.setMetaDTO(mt);
