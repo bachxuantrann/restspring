@@ -1,6 +1,7 @@
 package com.springrest.restApp.util;
 
 import com.springrest.restApp.domain.RestResponse;
+import com.springrest.restApp.util.annotation.ApiMessage;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -34,7 +35,8 @@ public class FormatRestResponse implements ResponseBodyAdvice<Object> {
         } else {
 //        Case success
             res.setData(body);
-            res.setMessage("Call API successfully");
+            ApiMessage message = returnType.getMethodAnnotation(ApiMessage.class);
+            res.setMessage(message != null ? message.value(): "Call API success");
         }
         return res;
     }

@@ -3,6 +3,7 @@ package com.springrest.restApp.controller;
 import com.springrest.restApp.domain.User;
 import com.springrest.restApp.domain.dto.ResultPaginationDTO;
 import com.springrest.restApp.service.UserService;
+import com.springrest.restApp.util.annotation.ApiMessage;
 import com.springrest.restApp.util.error.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/api/v1")
 public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
@@ -45,6 +47,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
     @GetMapping("/users")
+    @ApiMessage("get all users")
     public ResponseEntity<ResultPaginationDTO> getAllUser(
             @Filter Specification<User> spec,
             Pageable pageable

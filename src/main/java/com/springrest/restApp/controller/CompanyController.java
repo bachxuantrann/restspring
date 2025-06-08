@@ -3,6 +3,7 @@ package com.springrest.restApp.controller;
 import com.springrest.restApp.domain.Company;
 import com.springrest.restApp.domain.dto.ResultPaginationDTO;
 import com.springrest.restApp.service.CompanyService;
+import com.springrest.restApp.util.annotation.ApiMessage;
 import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/api/v1")
 public class CompanyController {
     private final CompanyService companyService;
     public CompanyController(CompanyService companyService) {
@@ -28,6 +30,7 @@ public class CompanyController {
     }
 //    Get list companies
     @GetMapping("/companies")
+    @ApiMessage("get all companies")
     public ResponseEntity<ResultPaginationDTO> getAllCompanies(
             @Filter Specification<Company> spec,
             Pageable pageable
