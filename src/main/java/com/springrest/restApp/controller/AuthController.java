@@ -1,8 +1,10 @@
 package com.springrest.restApp.controller;
 
 
+import com.springrest.restApp.domain.User;
 import com.springrest.restApp.domain.dto.LoginDTO;
 import com.springrest.restApp.domain.dto.ResLoginDTO;
+import com.springrest.restApp.service.UserService;
 import com.springrest.restApp.util.SecurityUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final SecurityUtil securityUtil;
-    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil) {
+    private final UserService userService;
+    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil, UserService userService) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil =  securityUtil;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
@@ -35,6 +39,11 @@ public class AuthController {
         String access_token =  this.securityUtil.createToken(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ResLoginDTO res = new ResLoginDTO();
+        User currentUser = this.userService.handleGetUserByUsername(loginDTO.getUsername());
+        if (currentUser != null) {
+            ResLoginDTO.UserLogin userLogin= new ResLoginDTO.UserLogin(currentUser.getId(),currentUser.getEmail(),currentUser.getName());
+            res.setUserLogin(userLogin);
+        }
         res.setAccessToken(access_token);
         return ResponseEntity.ok().body(res);
     }
