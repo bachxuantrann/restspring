@@ -7,6 +7,9 @@ import com.springrest.restApp.domain.dto.ResLoginDTO;
 import com.springrest.restApp.service.UserService;
 import com.springrest.restApp.util.SecurityUtil;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -23,6 +26,8 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final SecurityUtil securityUtil;
     private final UserService userService;
+    @Value("${bxt.jwt.refresh-token-validity-in-seconds}")
+    private long refeshTokenExpiration;
     public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil, UserService userService) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil =  securityUtil;
@@ -47,6 +52,17 @@ public class AuthController {
         res.setAccessToken(access_token);
 //        create refresh token
         String refresh_token = this.securityUtil.createRefreshToken(loginDTO.getUsername(),res);
-        return ResponseEntity.ok().body(res);
+//        update token of user
+        this.userService.updateUserToken(refresh_token, loginDTO.getUsername());
+//        set cookies
+        ResponseCookie cookie = ResponseCookie.from("refresh_token", refresh_token)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(refeshTokenExpiration)
+                .build();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(res);
     }
 }
